@@ -1,5 +1,6 @@
 import pygame
 import itertools
+import math
 
 class Ball:
     
@@ -81,15 +82,19 @@ class World:
                 ball.reflect(dt, "y")
             else:
                 ball.remove = True
-    
-    def ball_on_ball(self, ball1, ball2):
+
+    ''' checks if balls collide, and if so reflects balls off their orthogonal separating plane '''
+    def ball_on_ball(self, ball1, ball2, dt):
         diff_x = ball1.x - ball2.x
         diff_y = ball1.y - ball2.y
-        dist = pow(diff_x,2) + pow(diff_y,2)
-        if dist < pow(ball1.radius + ball2.radius,2):
-            return True
-        else:
-            return False
+        dist = math.sqrt(pow(diff_x,2) + pow(diff_y,2))
+        if dist < ball1.radius + ball2.radius:
+            norm_diff_x = diff_x/dist; norm_diff_y = diff_y/dist
+            coll_vel1 = ball1.x_vel * norm_diff_x + ball1.y_vel * norm_diff_y
+            coll_vel2 = (ball2.x_vel * norm_diff_x + ball2.y_vel * norm_diff_y)
+            ball1.take_step(-dt); ball2.take_step(-dt)
+            ball1.x_vel -= 2*coll_vel1*norm_diff_x; ball1.y_vel -= 2*coll_vel1*norm_diff_y
+            ball2.x_vel -= 2*coll_vel2*norm_diff_x; ball2.y_vel -= 2*coll_vel2*norm_diff_y
     
     def get_balls_from_server(self):
         return []
@@ -109,7 +114,7 @@ class World:
             self.update_collide(ball, collide, dt)
 
         for ball1,ball2 in itertools.combinations(self.balls, r = 2):
-            print self.ball_on_ball(ball1, ball2)
+            self.ball_on_ball(ball1, ball2, dt)
         
         ''' passing balls to remove to server and updating '''
         pass_balls = [ball for ball in self.balls if ball.remove]
