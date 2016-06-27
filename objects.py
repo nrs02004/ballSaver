@@ -26,15 +26,6 @@ class Ball:
         self.x += self.x_vel * dt
         self.y += self.y_vel * dt
 
-    def ball_on_ball(self, ball):
-        diff_x = self.x - ball.x
-        diff_y = self.y - ball.y
-        dist = pow(diff_x,2) + pow(diff_y,2)
-        if dist < pow(self.radius + ball.radius,2):
-            return True
-        else:
-            return False
-
 
 class World:
     
@@ -90,7 +81,16 @@ class World:
                 ball.reflect(dt, "y")
             else:
                 ball.remove = True
-
+    
+    def ball_on_ball(self, ball1, ball2):
+        diff_x = ball1.x - ball2.x
+        diff_y = ball1.y - ball2.y
+        dist = pow(diff_x,2) + pow(diff_y,2)
+        if dist < pow(ball1.radius + ball2.radius,2):
+            return True
+        else:
+            return False
+    
     def get_balls_from_server(self):
         return []
 
@@ -109,7 +109,7 @@ class World:
             self.update_collide(ball, collide, dt)
 
         for ball1,ball2 in itertools.combinations(self.balls, r = 2):
-            print ball1.ball_on_ball(ball2)
+            print self.ball_on_ball(ball1, ball2)
         
         ''' passing balls to remove to server and updating '''
         pass_balls = [ball for ball in self.balls if ball.remove]
