@@ -40,6 +40,14 @@ class World:
         self.y_b_lim = 0
         self.y_t_lim = _height
         self.balls = balls
+
+    ''' Takes in a ball, and outputs a list of [normalized x, normalized y, normalized x_vel, normalized y_vel] '''
+    def create_norm_dat_from_ball(self, ball):
+        return [ball.x / self.x_r_lm, ball.y/self.y_t_lim, ball.x_vel/self.x_r_lim, ball.y_vel/self.y_t_lim]
+    
+    ''' Takes in a vector of [normalized x, normalized y, normalized x_vel, normalized y_vel, radius], and outputs a ball'''
+    def create_ball_from_norm_dat(self, norm_x, norm_y, norm_x_vel, norm_y_vel, radius):
+        return Ball(norm_x * self.x_r_lm, norm_y * self.y_t_lim, norm_x_vel * self.x_r_lm, norm_y_vel * self.y_t_lim, radius)
     
     ''' Checks if a ball has collided with a wall '''
     def check_for_walls(self, ball):
@@ -97,9 +105,21 @@ class World:
             ball2.x_vel -= 2*coll_vel2*norm_diff_x; ball2.y_vel -= 2*coll_vel2*norm_diff_y
     
     def get_balls_from_server(self):
-        return []
+        balls = []
+        ''' NEED TO WRITE *get_ball_dat_from_server*   
+        ball_dat = get_ball_dat_from_server()
+        for dat in ball_dat:
+            balls.append(create_ball_from_norm_dat(dat.x, dat.y, dat.x_vel, dat.y_vel, dat.radius))
+        '''
+        return balls
 
     def pass_balls_to_server(self, balls):
+        ball_dat = []
+        for ball in balls:
+            ball_dat.append(create_norm_dat_from_ball(ball))
+        ''' NEED TO WRITE *pass_ball_dat_to_server*
+        pass_ball_dat_to_server()
+        '''
         return None
     
     def update(self, dt):
